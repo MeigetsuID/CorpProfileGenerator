@@ -132,6 +132,7 @@ migrations/
 system/**/*.dat
 
 # Unused files
+.github/
 Docker/
 coverage/
 src/
