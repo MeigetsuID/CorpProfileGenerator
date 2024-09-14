@@ -1,9 +1,15 @@
 {
   "name": "@meigetsuid/corpprofilegen",
   "version": "2.1.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "type": "module",
+  "main": "dist/cjs/index.js",
+  "types": "dist/@types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
   "engines": {
     "node": ">=21.0.0"
   },
@@ -13,7 +19,12 @@
     "eslint:fix": "eslint --cache --ext .js,.ts . --fix",
     "coverage": "jest --coverage",
     "test": "jest",
-    "prepack": "tsc --project tsconfig.release.json"
+    "build": "tsc",
+    "postbuild": "node ./add-js-extension.js dist/",
+    "build:release": "run-p build:release:*",
+    "build:release:cjs": "tsc -p tsconfig.cjs.json",
+    "build:release:esm": "tsc -p tsconfig.esm.json",
+    "prepack": "run-s build:release"
   },
   "repository": {
     "type": "git",
