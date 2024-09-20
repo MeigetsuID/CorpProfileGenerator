@@ -1,6 +1,6 @@
 {
   "name": "@meigetsuid/corpprofilegen",
-  "version": "2.1.0",
+  "version": "2.1.0-patch01",
   "type": "module",
   "main": "dist/cjs/index.js",
   "types": "dist/@types/index.d.ts",
@@ -42,7 +42,7 @@
     "registry": "https://npm.pkg.github.com/"
   },
   "dependencies": {
-    "ntacorpnumberapimanager": "^1.0.3"
+    "ntacorpnumberapimanager": "^1.0.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
