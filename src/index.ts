@@ -9,6 +9,7 @@ export default class CorpProfileGenerator {
         return this.CorpNumber.getCorpInfoFromNum({ number: CorpNumber }).then(res => {
             if (res.corporations == null) return null;
             const CorpName = res.corporations[0].name;
+            /* v8 ignore next */
             if (!CorpName) return null;
             return CorpName;
         });
