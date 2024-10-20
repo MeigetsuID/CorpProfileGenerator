@@ -7,7 +7,7 @@ export default class CorpProfileGenerator {
     }
     public GetNewestName(CorpNumber: string): Promise<string> {
         return this.CorpNumber.getCorpInfoFromNum({ number: CorpNumber }).then(res => {
-            if (res.corporations.length === 0) throw new Error('No corporation found');
+            if (res.corporations == null) throw new Error('No corporation found');
             const CorpName = res.corporations[0].name;
             if (!CorpName) throw new Error('Corp name is null');
             return CorpName;
