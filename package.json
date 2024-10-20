@@ -1,15 +1,9 @@
 {
   "name": "@meigetsuid/corpprofilegen",
-  "version": "2.1.1",
-  "type": "module",
+  "version": "2.1.1-patch01",
   "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "types": "dist/@types/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
-    }
-  },
   "engines": {
     "node": ">=21.0.0"
   },
