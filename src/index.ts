@@ -1,18 +1,40 @@
-import CorpNumberManager from 'ntacorpnumberapimanager';
+import { existsSync } from 'node:fs';
+import { readJson } from 'nodeeasyfileio';
+
+type AccessTokenInformation = {
+    token_type: string;
+    access_token: string;
+    refresh_token: string;
+    expires_at: {
+        access_token: string;
+        refresh_token: string;
+    };
+};
 
 export default class CorpProfileGenerator {
-    private CorpNumber: CorpNumberManager;
-    constructor(NTAAppKey: string) {
-        this.CorpNumber = new CorpNumberManager(NTAAppKey);
+    constructor(private WTAAccessTokenFilePath: string) {}
+    private get WTAAccessToken(): string | null {
+        if (!existsSync(this.WTAAccessTokenFilePath)) return null;
+        const Record = readJson<AccessTokenInformation>(this.WTAAccessTokenFilePath);
+        return new Date(Record.expires_at.access_token) < new Date() ? null : Record.access_token;
     }
     public GetNewestName(CorpNumber: string): Promise<string | null> {
-        return this.CorpNumber.getCorpInfoFromNum({ number: CorpNumber }).then(res => {
-            if (res.corporations == null) return null;
-            const CorpName = res.corporations[0].name;
-            /* v8 ignore next */
-            if (!CorpName) return null;
-            return CorpName;
-        });
+        const Token = this.WTAAccessToken;
+        if (Token == null) return Promise.reject(new Error('WTA access token is expired.'));
+        return fetch(process.env.WTA_HOST + '/corporation/' + CorpNumber, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${Token}`,
+            },
+        }).then(res => {
+            if (res.status !== 200)
+                return res.text().then(text => {
+                    return Promise.reject(new Error(`Failed to get corporation name. Status code: ${res.status} - ${text}`));
+                });
+            return res.json().then(data => data.name);
+        })
+
     }
     public Create(arg: { corp_number: string; user_id: string; mailaddress: string; password: string }): Promise<{
         id: string;
