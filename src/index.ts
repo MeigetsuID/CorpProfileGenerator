@@ -30,11 +30,12 @@ export default class CorpProfileGenerator {
         }).then(res => {
             if (res.status !== 200)
                 return res.text().then(text => {
-                    return Promise.reject(new Error(`Failed to get corporation name. Status code: ${res.status} - ${text}`));
+                    return Promise.reject(
+                        new Error(`Failed to get corporation name. Status code: ${res.status} - ${text}`)
+                    );
                 });
-            return res.json().then(data => data.name);
-        })
-
+            return res.json().then(data => data.corporations[0].name);
+        });
     }
     public Create(arg: { corp_number: string; user_id: string; mailaddress: string; password: string }): Promise<{
         id: string;
@@ -44,16 +45,18 @@ export default class CorpProfileGenerator {
         password: string;
         account_type: number;
     } | null> {
-        return this.GetNewestName(arg.corp_number).then(CorpName => {
-            if (CorpName == null) return null;
-            return {
-                id: arg.corp_number,
-                user_id: arg.user_id,
-                name: CorpName,
-                mailaddress: arg.mailaddress,
-                password: arg.password,
-                account_type: 3,
-            };
-        });
+        return this.GetNewestName(arg.corp_number)
+            .then(CorpName => {
+                if (CorpName == null) return null;
+                return {
+                    id: arg.corp_number,
+                    user_id: arg.user_id,
+                    name: CorpName,
+                    mailaddress: arg.mailaddress,
+                    password: arg.password,
+                    account_type: 3,
+                };
+            })
+            .catch(() => null);
     }
 }
