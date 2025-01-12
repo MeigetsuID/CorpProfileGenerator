@@ -14,11 +14,12 @@
     "ci": "run-p eslint test",
     "test": "dotenv jest",
     "build": "tsc",
-    "postbuild": "node ./add-js-extension.js dist/",
     "build:release": "run-p build:release:*",
     "build:release:cjs": "tsc -p tsconfig.cjs.json",
     "build:release:esm": "tsc -p tsconfig.esm.json",
-    "prepack": "run-s build:release"
+    "postbuild:release:esm": "node ./add-js-extension.js dist/esm",
+    "prepack": "run-s build:release",
+    "postinstall": "run-s build:release"
   },
   "repository": {
     "type": "git",
