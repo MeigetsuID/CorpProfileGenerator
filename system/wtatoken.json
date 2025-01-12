@@ -1,0 +1,9 @@
+{
+    "token_type": "Bearer",
+    "access_token": "validtoken",
+    "refresh_token": "validtoken",
+    "expires_at": {
+        "access_token": "2100-07-01T00:00:00Z",
+        "refresh_token": "2100-07-01T00:00:00Z"
+    }
+}
