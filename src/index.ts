@@ -20,7 +20,7 @@ export default class CorpProfileGenerator {
     }
     public GetNewestName(CorpNumber: string): Promise<string | null> {
         const Token = this.WTAAccessToken;
-        if (Token == null) return Promise.reject(new Error('WTA access token is expired.'));
+        if (Token == null) return Promise.reject(new Error('No valid WTA access token is found.'));
         return fetch(process.env.WTA_HOST + '/corporation/' + CorpNumber, {
             method: 'GET',
             headers: {
