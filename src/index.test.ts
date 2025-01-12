@@ -1,33 +1,39 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'nodeeasyfileio';
 import CorpProfileGenerator from '.';
+import { convert } from 'ntacorpnumberapimanager-xmlparser';
 
 describe('Corp Profile Generator Test', () => {
-    const CPG = new CorpProfileGenerator('dummy');
+    const CPG = new CorpProfileGenerator('./system/wtatoken.json');
     beforeAll(() => {
         global.fetch = jest.fn(url => {
             const urlString = typeof url === 'string' ? url : url instanceof URL ? url.toString() : '';
-            const query = new URL(urlString).searchParams.get('number');
-            if (query == null) return Promise.reject('no query');
-            const xml = existsSync('./testdata/' + query + '.xml')
-                ? readFile('./testdata/' + query + '.xml')
-                : readFile('./testdata/notfound.xml');
-            return Promise.resolve(
-                new Response(xml, {
-                    status: 200,
-                    headers: {
-                        'Content-Type': 'application/xml',
-                    },
-                })
-            );
+            const corpNumber = urlString.match(/[1-9][0-9]{12}/);
+
+            if (corpNumber == null) return Promise.resolve(new Response('no corp number', { status: 404 }));
+            const query = corpNumber[0];
+            if (!existsSync('./testdata/' + query + '.xml'))
+                return Promise.resolve(new Response('Not found', { status: 404 }));
+            const xml = readFile('./testdata/' + query + '.xml');
+            return convert(xml).then(json => {
+                return Promise.resolve(
+                    new Response(JSON.stringify(json), {
+                        status: 200,
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                );
+            });
         });
     });
     afterAll(() => {
         jest.clearAllMocks();
     });
     it('Mock Check', async () => {
-        const res = await CPG.GetNewestName('7000012050002');
-        expect(res).toBe(null); // ここで「国税庁」が返ってきたら、Mockが効いていない
+        await expect(CPG.GetNewestName('7000012050002')).rejects.toThrow(
+            'Failed to get corporation name. Status code: 404 - Not found'
+        );
     });
     describe('GetNewestName', () => {
         it('OK', async () => {
@@ -35,8 +41,9 @@ describe('Corp Profile Generator Test', () => {
             expect(res).toBe('国立国会図書館');
         });
         it('NG', async () => {
-            const res = await CPG.GetNewestName('4010404006753');
-            expect(res).toBeNull();
+            await expect(CPG.GetNewestName('4010404006753')).rejects.toThrow(
+                'Failed to get corporation name. Status code: 404 - Not found'
+            );
         });
     });
     describe('Create', () => {
