@@ -18,8 +18,7 @@
     "build:release:cjs": "tsc -p tsconfig.cjs.json",
     "build:release:esm": "tsc -p tsconfig.esm.json",
     "postbuild:release:esm": "node ./add-js-extension.js dist/esm",
-    "prepack": "run-s build:release",
-    "postinstall": "run-s build:release"
+    "prepack": "run-s build:release"
   },
   "repository": {
     "type": "git",
